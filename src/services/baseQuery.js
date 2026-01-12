@@ -27,8 +27,8 @@ const baseQuery = async (args) => {
     };
 
     try {
-        const response = await httpRequest(config);
-        return response;
+        const data = await httpRequest(config);
+        return data;
     } catch (error) {
         return { error }
     }

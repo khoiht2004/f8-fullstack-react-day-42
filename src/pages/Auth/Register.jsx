@@ -1,56 +1,48 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useRegisterMutation } from "../../services/auth";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../../schemas/registerSchema";
+import { useEffect } from "react";
 
 function Register() {
-  const [register] = useRegisterMutation();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const navigate = useNavigate();
+  const [register, response] = useRegisterMutation();
+
+  // React Hook Form + Zod resolver
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+    mode: "onBlur", // Validate khi blur
   });
-  const [errors, setErrors] = useState({});
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  useEffect(() => {
+    if (response.isSuccess) {
+      const accessToken = response?.data?.access_token;
+      const refreshToken = response?.data?.refresh_token;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setErrors({});
+      navigate("/");
+    }
+  }, [navigate, response]);
 
+  const onSubmit = async (data) => {
     try {
-      // Validate form data với Zod
-      registerSchema.parse(formData);
-
-      // Nếu validation thành công, gọi API register
-      const response = register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
+      const result = await register({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        password_confirmation: data.confirmPassword,
       });
 
-      console.log(response);
-      return response;
+      return result;
     } catch (error) {
-      // Xử lý lỗi từ Zod validation
-      if (error.name === "ZodError") {
-        const formattedErrors = {};
-        error.errors.forEach((err) => {
-          formattedErrors[err.path[0]] = err.message;
-        });
-        setErrors(formattedErrors);
-      } else {
-        console.error("Đã xảy ra lỗi: ", error);
-      }
+      console.error("Đã xảy ra lỗi: ", error);
     }
   };
 
@@ -60,7 +52,7 @@ function Register() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Last Name & First Name */}
             <div className="flex gap-4">
               {/* Last Name */}
@@ -73,19 +65,17 @@ function Register() {
                 </label>
                 <input
                   type="text"
-                  name="lastName"
                   id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => {
-                    handleInputChange("lastName", e.target.value);
-                  }}
+                  {...registerField("lastName")}
                   placeholder="Họ"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-200 placeholder-gray-400 ${
                     errors.lastName ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.lastName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.lastName.message}
+                  </p>
                 )}
               </div>
 
@@ -99,19 +89,17 @@ function Register() {
                 </label>
                 <input
                   type="text"
-                  name="firstName"
                   id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => {
-                    handleInputChange("firstName", e.target.value);
-                  }}
+                  {...registerField("firstName")}
                   placeholder="Tên"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-200 placeholder-gray-400 ${
                     errors.firstName ? "border-red-500" : "border-gray-300"
                   }`}
                 />
                 {errors.firstName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.firstName.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -126,19 +114,17 @@ function Register() {
               </label>
               <input
                 type="email"
-                name="email"
                 id="email"
-                value={formData.email}
-                onChange={(e) => {
-                  handleInputChange("email", e.target.value);
-                }}
+                {...registerField("email")}
                 placeholder="Email"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-200 placeholder-gray-400 ${
                   errors.email ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -152,19 +138,17 @@ function Register() {
               </label>
               <input
                 type="password"
-                name="password"
                 id="password"
-                value={formData.password}
-                onChange={(e) => {
-                  handleInputChange("password", e.target.value);
-                }}
+                {...registerField("password")}
                 placeholder="••••••••"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-200 placeholder-gray-400 ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 }`}
               />
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
             {/* Confirm Password */}
@@ -177,12 +161,8 @@ function Register() {
               </label>
               <input
                 type="password"
-                name="confirmPassword"
                 id="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={(e) => {
-                  handleInputChange("confirmPassword", e.target.value);
-                }}
+                {...registerField("confirmPassword")}
                 placeholder="••••••••"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-200 placeholder-gray-400 ${
                   errors.confirmPassword ? "border-red-500" : "border-gray-300"
@@ -190,16 +170,16 @@ function Register() {
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.confirmPassword}
+                  {errors.confirmPassword.message}
                 </p>
               )}
             </div>
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-linear-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 focus:ring-4 focus:ring-purple-300 transition duration-200"
+              className="w-full bg-linear-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 cursor-pointer transition duration-200"
             >
-              Đăng ký
+              {response.isLoading ? "Đang đăng ký..." : "Đăng ký"}
             </button>
           </form>
 

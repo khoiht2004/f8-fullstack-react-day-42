@@ -1,24 +1,32 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useLoginMutation } from "../../services/auth";
+import { useLoginMutation, useMeQuery } from "../../services/auth";
 
 function Login() {
   const navigate = useNavigate();
-  const [login, { data, isSuccess, isError, error }] = useLoginMutation();
+  const [login, response] = useLoginMutation();
+  const { isSuccess } = useMeQuery();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "sondang@f8.edu.vn",
+    password: "12345678",
   });
 
   useEffect(() => {
     if (isSuccess) {
-      const accessToken = data?.access_token;
-      const refreshToken = data?.refresh_token;
-      localStorage.setItem("AccessToken", accessToken);
-      localStorage.setItem("RefreshToken", refreshToken);
       navigate("/");
     }
-  }, [data?.access_token, data?.refresh_token, isSuccess, navigate]);
+  }, [navigate, isSuccess]);
+
+  useEffect(() => {
+    if (response.isSuccess) {
+      const accessToken = response?.data?.access_token;
+      const refreshToken = response?.data?.refresh_token;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      navigate("/");
+    }
+  }, [navigate, response]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -36,11 +44,13 @@ function Login() {
         password: formData.password,
       });
 
-      if (isSuccess) {
+      if (response.isSuccess) {
+        console.log("Login successfully");
+
         return response;
       }
 
-      if (isError) throw new Error(error);
+      if (response.isError) throw new Error(response.error);
     } catch (error) {
       console.error("Đã xảy ra lỗi: ", error);
     }
@@ -94,12 +104,18 @@ function Login() {
               />
             </div>
 
+            {response.isError && (
+              <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm font-medium">
+                ⚠️ Đăng nhập thất bại
+              </p>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-200"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 cursor-pointer transition duration-200"
             >
-              Đăng nhập
+              {response.isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
           </form>
 

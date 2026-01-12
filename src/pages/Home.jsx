@@ -2,15 +2,15 @@ import { useMeQuery } from "../services/auth";
 import "./Home.css";
 
 function Home() {
-  const { data } = useMeQuery();
-
-  console.log(data);
+  const { isSuccess, data: currentUser } = useMeQuery();
 
   return (
     <div className="home-container">
       <div className="home-content">
         <h1 className="home-title">Trang Chủ</h1>
-        <p className="home-subtitle">Xin chào Khôi</p>
+        {isSuccess && (
+          <p className="home-subtitle">Xin chào {currentUser?.firstName}</p>
+        )}
       </div>
     </div>
   );
