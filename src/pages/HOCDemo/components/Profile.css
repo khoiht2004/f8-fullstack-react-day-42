@@ -1,10 +1,40 @@
-.home-container {
+.profile-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
   position: relative;
+}
+
+.profile-content {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.profile-title {
+  font-size: 3rem;
+  color: #333;
+  margin: 0;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-subtitle {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #000;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  opacity: 0.95;
+  animation: fadeIn 1.5s ease-in;
 }
 
 .auth-buttons {
@@ -27,40 +57,15 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.login-btn {
+.logout-btn {
   background: white;
   color: #667eea;
 }
 
-.login-btn:hover {
+.logout-btn:hover {
   background: #f0f0f0;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.register-btn {
-  background: #764ba2;
-  color: white;
-}
-
-.register-btn:hover {
-  background: #5f3d85;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.home-content {
-  text-align: center;
-}
-
-.home-title {
-  font-size: 4rem;
-  font-weight: 700;
-  color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 2px;
-  margin-bottom: 1rem;
-  animation: fadeIn 1s ease-in;
 }
 
 @keyframes fadeIn {
@@ -75,7 +80,11 @@
 }
 
 @media (max-width: 768px) {
-  .home-title {
-    font-size: 2.5rem;
+  .profile-content {
+    padding: 40px 30px;
+  }
+
+  .profile-title {
+    font-size: 2rem;
   }
 }

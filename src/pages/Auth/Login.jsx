@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useLoginMutation, useMeQuery } from "../../services/auth";
@@ -13,18 +14,18 @@ function Login() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
+      navigate("/profile");
     }
   }, [navigate, isSuccess]);
 
   useEffect(() => {
     if (response.isSuccess) {
-      const accessToken = response?.data?.access_token;
-      const refreshToken = response?.data?.refresh_token;
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      const { access_token, refresh_token } = response?.data;
 
-      navigate("/");
+      localStorage.setItem("accessToken", access_token);
+      localStorage.setItem("refreshToken", refresh_token);
+
+      navigate("/profile");
     }
   }, [navigate, response]);
 

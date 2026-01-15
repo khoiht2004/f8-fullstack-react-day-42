@@ -26,7 +26,7 @@ function Register() {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
 
-      navigate("/");
+      navigate("/profile");
     }
   }, [navigate, response]);
 

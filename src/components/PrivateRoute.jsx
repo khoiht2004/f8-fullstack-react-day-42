@@ -19,6 +19,7 @@ function PrivateRoute() {
   if (isError) {
     return <Navigate to="/login" />;
   }
+
   return <Outlet />;
 }
 export default PrivateRoute;

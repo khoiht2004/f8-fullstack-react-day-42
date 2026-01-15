@@ -1,16 +1,27 @@
-import { useMeQuery } from "../services/auth";
+import { useNavigate } from "react-router";
 import "./Home.css";
 
 function Home() {
-  const { isSuccess, data: currentUser } = useMeQuery();
+  const navigate = useNavigate();
 
   return (
     <div className="home-container">
+      <div className="auth-buttons">
+        <button
+          className="auth-btn login-btn"
+          onClick={() => navigate("/login")}
+        >
+          Đăng nhập
+        </button>
+        <button
+          className="auth-btn register-btn"
+          onClick={() => navigate("/register")}
+        >
+          Đăng ký
+        </button>
+      </div>
       <div className="home-content">
         <h1 className="home-title">Trang Chủ</h1>
-        {isSuccess && (
-          <p className="home-subtitle">Xin chào {currentUser?.firstName}</p>
-        )}
       </div>
     </div>
   );
