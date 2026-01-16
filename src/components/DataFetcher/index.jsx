@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
-function DataFetcher({ url, children }) {
+function DataFetcher({
+  url,
+  baseUrl = "https://jsonplaceholder.typicode.com",
+  children,
+}) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,7 +14,7 @@ function DataFetcher({ url, children }) {
     setError(null);
     setData(null);
 
-    fetch(`https://jsonplaceholder.typicode.com${url}`)
+    fetch(`${baseUrl}${url}`)
       .then((res) => res.json())
       .then((response) => {
         setData(response);

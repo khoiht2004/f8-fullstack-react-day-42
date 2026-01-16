@@ -19,13 +19,18 @@ const queueJobs = [];
 
 async function sendRefreshToken(config, refreshToken) {
   isRefreshing = true;
-  const response = await axios.post(`${config.baseURL}/auth/refresh-token`, {
-    refresh_token: refreshToken,
-  });
-  const { access_token, refresh_token } = response?.data.data;
+  try {
+    const response = await axios.post(`${config.baseURL}/auth/refresh-token`, {
+      refresh_token: refreshToken,
+    });
+    const { access_token, refresh_token } = response?.data.data;
 
-  localStorage.setItem("accessToken", access_token);
-  localStorage.setItem("refreshToken", refresh_token);
+    localStorage.setItem("accessToken", access_token);
+    localStorage.setItem("refreshToken", refresh_token);
+  } finally {
+    isRefreshing = false;
+    queueJobs.length = 0; // Xóa hàng đợi
+  }
 }
 
 httpRequest.interceptors.response.use(
@@ -50,6 +55,9 @@ httpRequest.interceptors.response.use(
         return await httpRequest.request(original);
       } catch (error) {
         queueJobs.forEach((job) => job.reject());
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login"; // Chuyển hướng đến login
         return Promise.reject(error);
       }
     }
